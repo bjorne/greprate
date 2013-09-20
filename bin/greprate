@@ -1,0 +1,101 @@
+// #!/usr/bin/env node
+
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+
+var CONFIG = {
+  height: 10,
+  width: 80,
+  groupWidth: 10,
+  rollup: 60000,
+  rollupText: 'min',
+  rateWidth: 15,
+  shareWidth: 4
+};
+
+var args = process.argv.slice(2);
+var start = new Date().getTime();
+
+function elapsed() {
+  return (new Date().getTime() - start);
+}
+
+if (args.length < 1) {
+  console.log('Must specify a regex with a match group as argument.');
+  process.exit(1);
+}
+var regex = new RegExp(args[0]);
+var matchGroup = args[1] ? +args[1] : 1;
+
+var counts = {};
+
+function write(string) {
+  process.stdout.write(string);
+}
+
+function cursorUp(n) {
+  write('\u001b[' + n + 'A');
+};
+
+var lastCount = 0;
+function render() {
+  if (lastCount > 0) {
+    cursorUp(lastCount);
+  }
+  var t = elapsed();
+  var groups = Object.keys(counts).sort();
+  var maxGroupLength = Math.max.apply(null, groups.map(function(g) { return g.length; }));
+  var groupRates = groups.map(function(g) { return counts[g]/t*CONFIG.rollup; });
+  var maxGroupRate = Math.max.apply(null, groupRates);
+  var sumGroupRates = groupRates.reduce(function(m,v) { return m+v; }, 0);
+  lastCount = groups.length;
+
+  groups.forEach(function(g, gi) {
+    write(g);
+    for (var i = g.length; i < maxGroupLength; i++) write(' ');
+    write(' : ');
+
+    var rate = (groupRates[gi]).toFixed(2) + '/' + CONFIG.rollupText;
+    for (i = 0; i < CONFIG.rateWidth - rate.length; i++) write(' ');
+    write(rate + ' ');
+
+    var share = (groupRates[gi]/sumGroupRates*100).toFixed(1);
+    write('(');
+    for (i = 0; i < CONFIG.shareWidth - share.length; i++) write(' ');
+    write(share + '%) ');
+
+    // write(('a' + (groupRates[gi]/maxGroupRate)*CONFIG.groupWidth) + 'b');
+    for (var j = 0; j < (groupRates[gi]/maxGroupRate)*CONFIG.width; j++) write('=');
+    // write('j' + j);
+    for (j = j; j < CONFIG.width; j++) write('.');
+    write('\n');
+  });
+}
+
+setInterval(function() { render(); }, 500);
+
+function processLine(line) {
+  var m = line.match(regex);
+  if (m) {
+    counts[m[matchGroup]] = counts[m[matchGroup]] || 0;
+    counts[m[matchGroup]]++;
+  }
+}
+
+var queued = null;
+process.stdin.on('data', function(chunk) {
+  var lines = chunk.split('\n');
+  if (queued) { lines[0] = queued + lines[0]; }
+  var last = lines.pop();
+  lines.forEach(processLine);
+  queued = '';
+  if (last === '') {
+    processLine(last);
+  } else {
+    queued = last;
+  }
+});
+
+process.stdin.on('end', function() {
+
+});
