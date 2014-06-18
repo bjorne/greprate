@@ -1,0 +1,24 @@
+{
+  "name": "greprate",
+  "version": "0.0.1",
+  "description": "Tool to show the rate with which regex matches occur",
+  "main": "bin/greprate",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bjorne/greprate.git"
+  },
+  "keywords": [
+    "cli",
+    "grep"
+  ],
+  "bin": {
+    "greprate": "bin/greprate"
+  },
+  "author": "Björn Ramberg",
+  "license": "BSD",
+  "gitHead": "0019483a8791f0b23681f87423219b5e38025687",
+  "readmeFilename": "README.md"
+}
