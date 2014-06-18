@@ -2,6 +2,7 @@
   "name": "greprate",
   "version": "0.0.1",
   "description": "Tool to show the rate with which regex matches occur",
+  "homepage": "https://github.com/bjorne/greprate",
   "main": "bin/greprate",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
