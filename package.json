@@ -1,6 +1,6 @@
 {
   "name": "greprate",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Tool to show the rate with which regex matches occur",
   "homepage": "https://github.com/bjorne/greprate",
   "main": "bin/greprate",
